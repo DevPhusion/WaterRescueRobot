@@ -54,9 +54,9 @@ bool invertMotorMT3 = false;
 bool invertMotorMT4 = false;
 
 // ---------------- Speed ramp settings ----------------
-const uint16_t START_PWM = 1400;             // PWM applied the instant a direction is first triggered
-const uint16_t MAX_PWM   = 4095;             // full-speed cap
-const uint16_t BRAKE_PWM = 4095;             // both channels high = active short-brake
+const uint16_t START_PWM = 700;            // PWM applied the instant a direction is first triggered
+const uint16_t MAX_PWM   = 1000;             // full-speed cap
+const uint16_t BRAKE_PWM = 2800;             // both channels high = active short-brake
 const unsigned long RAMP_TIME_MS = 3000;     // time to go from START_PWM to MAX_PWM
 // PWM units per millisecond; same rate is used for acceleration and deceleration
 const float RAMP_RATE = (float)(MAX_PWM - START_PWM) / (float)RAMP_TIME_MS;
@@ -189,6 +189,7 @@ void coastMotor(uint8_t biCh, uint8_t fiCh) {
   pwm.setPin(biCh, 0);
   pwm.setPin(fiCh, 0);
 }
+
 
 const char* modeName(DriveMode m) {
   switch (m) {

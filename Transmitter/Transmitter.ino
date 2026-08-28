@@ -1,14 +1,8 @@
-/*
-  ============================================================
-  BO DAM 2 CHIEU - THIET BI: TAY CAM (TRANSMITTER) - FIXED AUDIO
-  ============================================================
-*/
-
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include "driver/i2s.h"
 
-// ================== CAU HINH WIFI ==================
+//Wifi config
 const char* WIFI_SSID     = "Redmi Note 13 Pro 5G";
 const char* WIFI_PASSWORD = "Hailam09";
 
@@ -17,7 +11,7 @@ IPAddress broadcastIP(255, 255, 255, 255);
 
 WiFiUDP udp;
 
-// ================== CAU HINH CHAN - TAY CAM ====
+//Pins
 #define I2S_PORT       I2S_NUM_0
 
 #define MIC_SCK_PIN    32
@@ -27,24 +21,15 @@ WiFiUDP udp;
 #define SPK_BCLK_PIN   26
 #define SPK_LRC_PIN    27
 #define SPK_DIN_PIN    22
-#define SPK_SD_PIN     21   // chu dong keo HIGH de bat chip MAX98357A
+#define SPK_SD_PIN     21   // Set to HIGH -> Turn on speaker
 
-#define PTT_PIN        13   // active HIGH
-
-// ================================================================
-// CHE DO TAM THOI - CHUA CO NUT TACT SWITCH 
-// ================================================================
-#define FORCE_ALWAYS_TRANSMIT
+#define PTT_PIN        17   // active HIGH
 
 bool isPttPressed() {
-#ifdef FORCE_ALWAYS_TRANSMIT
-  return false; // DANG TEST CHE DO LOA - doi lai "true" de quay ve luon phat
-#else
-  return digitalRead(PTT_PIN) == HIGH; 
-#endif
+  return digitalRead(PTT_PIN) == HIGH;
 }
 
-// ================== CAU HINH AM THANH ==================
+// Audio config
 #define SAMPLE_RATE         16000
 #define DMA_BUF_LEN         256
 #define SAMPLES_PER_CHUNK   128
@@ -120,7 +105,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  pinMode(PTT_PIN, INPUT);
+  pinMode(PTT_PIN, INPUT_PULLDOWN);
 
   pinMode(SPK_SD_PIN, OUTPUT);
   digitalWrite(SPK_SD_PIN, HIGH);
@@ -160,7 +145,7 @@ void loop() {
       int samplesRead = bytesRead / sizeof(int32_t);
 
       for (int i = 0; i < samplesRead; i++) {
-        // FIXED: Chuyen tu >> 11 sang >> 14 de chong re tieng
+        // Chong re tieng: giam bit shift tu >>11 xuong >>14
         int32_t s = rawBuffer[i] >> 14;
         if (s > 32767) s = 32767;
         if (s < -32768) s = -32768;
